@@ -2,7 +2,7 @@ import "./App.css";
 import Header from "./components/Header/Header";
 import Shop from "./components/Shop/Shop";
 
-import { BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Review from "./components/Review/Review";
 import NotFound from "./components/NotFound/NotFound";
 import Inventory from "./components/Inventory/Inventory";
@@ -11,18 +11,15 @@ import Shipment from "./components/Shipment/Shipment";
 import Login from "./components/Login/Login";
 import { createContext } from "react";
 import { useState } from "react";
-import PrivateRoute from './components/PrivateRoute/PrivateRoute';
+import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 export const UserContext = createContext();
 
 function App() {
   const [loggedInUser, setloggedInUser] = useState({});
   return (
-    <UserContext.Provider value ={[loggedInUser , setloggedInUser]}>
-      <p>Email: {loggedInUser.email}</p>
-     
-      
+    <UserContext.Provider value={[loggedInUser, setloggedInUser]}>
       <Router>
-      <Header></Header>
+        <Header></Header>
         <Switch>
           <Route exact path="/shop">
             <Shop></Shop>
