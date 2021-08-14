@@ -1,57 +1,72 @@
 import React, { useEffect } from "react";
-import fakeData from "../../fakeData";
+
 import { useState } from "react";
 import "./Shop.css";
 import Product from "../Product/product";
 import Cart from "../Cart/Cart";
-import { addToDatabaseCart, getDatabaseCart } from "../../utilities/databaseManager";
-import { Link } from 'react-router-dom';
+import {
+  addToDatabaseCart,
+  getDatabaseCart,
+} from "../../utilities/databaseManager";
+import { Link } from "react-router-dom";
 
 const Shop = () => {
-  const first10 = fakeData.slice(0, 15);
-  
-  const [products] = useState(first10);
+  document.title = "Shop More";
+ 
+
+  const [products,setProducts] = useState([]);
   const [cart, setCart] = useState([]);
 
-  useEffect(() =>{
+  useEffect(() => {
+    fetch('http://localhost:5000/products')
+    .then(res => res.json())
+    .then(data => setProducts(data))
+  },[])
+
+  useEffect(() => {
     const savedCart = getDatabaseCart();
     const productKeys = Object.keys(savedCart);
-    const previousCart = productKeys.map (existingkey =>{
-      const product = fakeData.find(pd => pd.key === existingkey);
-      product.quantity = savedCart[existingkey];
-      return product;
+    if(products.length > 0){
+
+      const previousCart = productKeys.map((existingkey) => {
+        const product = products.find((pd) => pd.key === existingkey);
+        product.quantity = savedCart[existingkey];
+        return product;
+
     })
     setCart(previousCart);
-  },[])
+    
+    }
+    
+  }, [products]);
 
   const handleAddProduct = (product) => {
     const toBeAddedKey = product.key;
-    const sameProduct = cart.find(pd => pd.key === toBeAddedKey);
+    const sameProduct = cart.find((pd) => pd.key === toBeAddedKey);
     let count = 1;
     let newCart;
-    if(sameProduct){
-       count = sameProduct.quantity + 1;
+    if (sameProduct) {
+      count = sameProduct.quantity + 1;
       sameProduct.quantity = count;
-      const others = cart.filter(pd => pd.key !== toBeAddedKey);
+      const others = cart.filter((pd) => pd.key !== toBeAddedKey);
       newCart = [...others, sameProduct];
-    }
-    else {
+    } else {
       product.quantity = 1;
       newCart = [...cart, product];
     }
-    
-    
+
     setCart(newCart);
-    
+
     addToDatabaseCart(product.key, count);
   };
 
   return (
     <div className="shop-container">
       <div className="product-container">
+        {products.length === 0 && <p>loading.....</p>}
         {products.map((pd) => (
           <Product
-          key = {pd.key}
+            key={pd.key}
             addToCart={true}
             product={pd}
             addproduct={handleAddProduct}
@@ -61,9 +76,9 @@ const Shop = () => {
 
       <div className="cart-container">
         <Cart cart={cart}>
-        <Link to="/review">
-        <button className="main-button" >Review Order</button>
-        </Link>
+          <Link to="/review">
+            <button className="main-button">Review Order</button>
+          </Link>
         </Cart>
       </div>
     </div>

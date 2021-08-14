@@ -7,6 +7,7 @@ import ReviewItem from '../ReviewItem/ReviewItem';
 import image from '../../images/giphy.gif';
 import { useHistory } from 'react-router-dom';
 const Review = () => {
+    document.title = 'Review'
     const [cart, setCart ] = useState([]);
     const [orderPlaced, setOrderPlaced] = useState(false);
     const history = useHistory()
