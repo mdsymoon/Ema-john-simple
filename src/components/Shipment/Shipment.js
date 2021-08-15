@@ -1,31 +1,52 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import "./Shipment.css";
-import { UserContext } from './../../App';
-import {useContext} from "react";
+import { UserContext } from "./../../App";
+import { useContext } from "react";
+import { getDatabaseCart, processOrder } from "../../utilities/databaseManager";
 
 const Shipment = () => {
+  const [loggedInUser, setloggedInUser] = useContext(UserContext);
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data) => {
+    const savedCart = getDatabaseCart();
+    const orderDetails = {
+      ...loggedInUser,
+      products: savedCart,
+      shipment: data,
+      orderTime: new Date(),
+    };
 
-  const [loggedInUser, setloggedInUser] = useContext(UserContext);
-
-  console.log(watch("example"));
+    fetch("https://whispering-hamlet-71127.herokuapp.com/addOrder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(orderDetails),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          processOrder();
+          alert("order successful");
+        }
+      });
+  };
 
   return (
     <form className="form-style" onSubmit={handleSubmit(onSubmit)}>
-      <input defaultValue={loggedInUser.name}
+      <input
+        defaultValue={loggedInUser.name}
         {...register("name", { required: true })}
         placeholder="Your Name"
       />
       {errors.name && <span className="error">Name is required</span>}
 
-      <input defaultValue={loggedInUser.email}
+      <input
+        defaultValue={loggedInUser.email}
         {...register("email", { required: true })}
         placeholder="Your Email"
       />
