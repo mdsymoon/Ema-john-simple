@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import "./Shipment.css";
 import { UserContext } from "./../../App";
 import { useContext } from "react";
 import { getDatabaseCart, processOrder } from "../../utilities/databaseManager";
+import Payment from "../Payment/Payment";
 
 const Shipment = () => {
   const [loggedInUser, setloggedInUser] = useContext(UserContext);
+  const [shippingData , setShippingData] = useState(null);
   const {
     register,
     handleSubmit,
@@ -14,11 +16,16 @@ const Shipment = () => {
     formState: { errors },
   } = useForm();
   const onSubmit = (data) => {
-    const savedCart = getDatabaseCart();
+    setShippingData(data);
+};
+
+const handlePaymentSuccess = paymentId => {
+  const savedCart = getDatabaseCart();
     const orderDetails = {
       ...loggedInUser,
       products: savedCart,
-      shipment: data,
+      shipment: shippingData,
+      paymentId,
       orderTime: new Date(),
     };
 
@@ -37,7 +44,9 @@ const Shipment = () => {
   };
 
   return (
-    <form className="form-style" onSubmit={handleSubmit(onSubmit)}>
+    <div className="row container">
+      <div style={{display: shippingData ? 'none': 'block'}} className="col-md-6">
+      <form className="form-style" onSubmit={handleSubmit(onSubmit)}>
       <input
         defaultValue={loggedInUser.name}
         {...register("name", { required: true })}
@@ -72,7 +81,13 @@ const Shipment = () => {
 
       <input className="submit" type="submit" />
     </form>
+      </div>
+      <div style={{display: shippingData ? 'block': 'none'}} className="col-md-6">
+        <h1> Please pay for me</h1>
+        <Payment></Payment>
+      </div>
+    </div>
   );
-};
+}
 
 export default Shipment;
