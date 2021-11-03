@@ -66,7 +66,7 @@ const Shop = () => {
   return (
     <div className="shop-container">
       <div className="product-container">
-        <input type="text" onChange={handleSearch} />
+        <input type="text" onBlur={handleSearch} placeholder="Search" />
         {products.length === 0 && <p>loading.....</p>}
         {products.map((pd) => (
           <Product
