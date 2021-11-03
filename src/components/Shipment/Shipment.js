@@ -84,7 +84,7 @@ const handlePaymentSuccess = paymentId => {
       </div>
       <div style={{display: shippingData ? 'block': 'none'}} className="col-md-6">
         <h1> Please pay for me</h1>
-        <Payment></Payment>
+        <Payment handlePayment={handlePaymentSuccess}></Payment>
       </div>
     </div>
   );

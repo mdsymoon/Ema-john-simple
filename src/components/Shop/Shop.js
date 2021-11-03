@@ -12,15 +12,17 @@ import { Link } from "react-router-dom";
 
 const Shop = () => {
   document.title = "Shop More";
-
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch("https://whispering-hamlet-71127.herokuapp.com/products")
+    fetch(
+      `https://whispering-hamlet-71127.herokuapp.com/products?search=${search}`
+    )
       .then((res) => res.json())
       .then((data) => setProducts(data));
-  }, []);
+  }, [search])
 
   useEffect(() => {
     const savedCart = getDatabaseCart();
@@ -34,6 +36,8 @@ const Shop = () => {
       .then((res) => res.json())
       .then((data) => setCart(data));
   }, []);
+
+  
 
   const handleAddProduct = (product) => {
     const toBeAddedKey = product.key;
@@ -55,9 +59,14 @@ const Shop = () => {
     addToDatabaseCart(product.key, count);
   };
 
+  const handleSearch = (e)=> {
+    setSearch(e.target.value);
+  }
+
   return (
     <div className="shop-container">
       <div className="product-container">
+        <input type="text" onChange={handleSearch} />
         {products.length === 0 && <p>loading.....</p>}
         {products.map((pd) => (
           <Product
